@@ -233,6 +233,16 @@ def user_move(board):
         actual_move(board, move)
 
 
+# this AI only care the current move now dun care anything in the future
+def ez_AI_move(board):
+    myScore, AIScore = update_score(chessboard, marks_grid)
+    myPiece, AIPiece = count_pieces(chessboard)
+    AIChoices = available_moves(-1, board)
+    tempBoard = board
+
+    print()
+
+
 # main
 if __name__ == '__main__':
     myScore, oppoScore = 0, 0
@@ -241,14 +251,14 @@ if __name__ == '__main__':
     userMove = [0, 0]
 
     chessboard = [[0 for x in range(w)] for y in range(h)]    # the chessboard for user to actually see
-    marks_grid = [[5,3,4,4,4,4,3,5],
-                  [3,2,3,3,3,3,2,3],
-                  [4,3,1,1,1,1,3,4],
-                  [4,3,1,1,1,1,3,4],
-                  [4,3,1,1,1,1,3,4],
-                  [4,3,1,1,1,1,3,4],
-                  [3,2,3,3,3,3,2,3],
-                  [5,3,4,4,4,4,3,5]]     # the marks for AI to take
+    marks_grid = [[5, 3, 4, 4, 4, 4, 3, 5],
+                  [3, 2, 3, 3, 3, 3, 2, 3],
+                  [4, 3, 1, 1, 1, 1, 3, 4],
+                  [4, 3, 1, 1, 1, 1, 3, 4],
+                  [4, 3, 1, 1, 1, 1, 3, 4],
+                  [4, 3, 1, 1, 1, 1, 3, 4],
+                  [3, 2, 3, 3, 3, 3, 2, 3],
+                  [5, 3, 4, 4, 4, 4, 3, 5]]     # the marks for AI to take
     init_chessboard(chessboard)
 
     # DEBUG
@@ -269,3 +279,4 @@ if __name__ == '__main__':
     turn = -1
 
     # TODO: make the actual move
+    ez_AI_move(chessboard)
