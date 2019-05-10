@@ -1,4 +1,7 @@
 # board for function chessboard, marks for marks_grid, one for the side represents by 1, negaOne for the side of -1
+import copy
+
+
 def init_chessboard(board):
     board[3][3] = 1
     board[3][4] = -1
@@ -16,7 +19,7 @@ def print_board(board):             # TODO: change this to print to the UI
 
 # TODO: (THIS IS FOR AI) update score grid * board    DEBUG STAGE
 def update_score(board, marks):
-    one, negaOne = 0, 0, 0, 0
+    one, negaOne = 0, 0
     for i in range(0, 8):
         for j in range(0, 8):
             if board[i][j] == 1:
@@ -28,7 +31,7 @@ def update_score(board, marks):
 
 # TODO: count the board pieces
 def count_pieces(board):
-    one, negaOne = 0, 0, 0, 0
+    one, negaOne = 0, 0
     for i in range(0, 8):
         for j in range(0, 8):
             if board[i][j] == 1:
@@ -209,6 +212,7 @@ def user_move(board):
         print("You dun have any available moves hence passing you here")
         input("Press Enter to continue...")
         pass
+    # DEBUG
     for choice in choices:
         print("(actualMovement, originalPosition, position)", choice[0], choice[1], choice[2])
 
@@ -238,9 +242,23 @@ def ez_AI_move(board):
     myScore, AIScore = update_score(chessboard, marks_grid)
     myPiece, AIPiece = count_pieces(chessboard)
     AIChoices = available_moves(-1, board)
-    tempBoard = board
-
-    print()
+    FinalChoices = []
+    # loop the choices to see are there duplicate destination
+    for choice in AIChoices:
+        for duplicate in AIChoices:
+            actualMoves = []
+            if duplicate[0] == choice[0]:
+                actualMoves.append(duplicate)
+                tempBoard = None
+                tempBoard = copy.deepcopy(board)
+                for move in actualMoves:
+                    actual_move(tempBoard, move)
+                myScore, AIScore = update_score(tempBoard, marks_grid)
+                FinalChoices.append([actualMoves, myScore, AIScore])
+    # DEBUG
+    for possible in FinalChoices:
+        print("(actualMovement, originalPosition, position)", possible[0], "Scores: "
+              , possible[1], possible[2])
 
 
 # main
