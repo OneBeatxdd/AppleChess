@@ -5,14 +5,37 @@ from progress.spinner import Spinner
 
 
 class AI:
+    open_set = []
     close_set = []
     AI_board = []
     AI_scoreboard = []
 
     def __init__(self, board, score):
-        self.close_set = ez_AI_move(board)
         self.AI_board = board
         self.AI_scoreboard = score
+
+    # this AI only care the current move now dun care anything in the future
+    def ez_AI_move(self):
+        myScore, AIScore = update_score(chessboard, marks_grid)
+        myPiece, AIPiece = count_pieces(chessboard)
+        AIChoices = available_moves(-1, self.AI_board)
+        FinalChoices = []
+        # loop the choices to see are there duplicate destination
+        for choice in AIChoices:
+            for duplicate in AIChoices:
+                actualMoves = []
+                if duplicate[0] == choice[0]:
+                    actualMoves.append(duplicate)
+                    tempBoard = copy.deepcopy(self.AI_board)
+                    for move in actualMoves:
+                        actual_move(tempBoard, move)
+                    myScore, AIScore = update_score(tempBoard, marks_grid)
+                    FinalChoices.append([actualMoves, myScore, AIScore])
+        # DEBUG printing out the choices for AI
+        for possible in FinalChoices:
+            print("(actualMovement, originalPosition, position)", possible[0], "Scores: "
+                  , possible[1], possible[2])
+        self.open_set = FinalChoices
 
 
 def init_chessboard(board):
@@ -250,31 +273,6 @@ def user_move(board):
         actual_move(board, move)
 
 
-# this AI only care the current move now dun care anything in the future
-def ez_AI_move(board):
-    myScore, AIScore = update_score(chessboard, marks_grid)
-    myPiece, AIPiece = count_pieces(chessboard)
-    AIChoices = available_moves(-1, board)
-    FinalChoices = []
-    # loop the choices to see are there duplicate destination
-    for choice in AIChoices:
-        for duplicate in AIChoices:
-            actualMoves = []
-            if duplicate[0] == choice[0]:
-                actualMoves.append(duplicate)
-                tempBoard = None
-                tempBoard = copy.deepcopy(board)
-                for move in actualMoves:
-                    actual_move(tempBoard, move)
-                myScore, AIScore = update_score(tempBoard, marks_grid)
-                FinalChoices.append([actualMoves, myScore, AIScore])
-    # DEBUG printing out the choices for AI
-    for possible in FinalChoices:
-        print("(actualMovement, originalPosition, position)", possible[0], "Scores: "
-              , possible[1], possible[2])
-    return FinalChoices
-
-
 # MAIN
 if __name__ == '__main__':
     myScore, oppoScore = 0, 0
@@ -320,3 +318,4 @@ if __name__ == '__main__':
     time.sleep(0.3)
     print()
     AI = AI(chessboard, marks_grid)
+    AI.ez_AI_move()
