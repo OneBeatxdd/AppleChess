@@ -1,5 +1,7 @@
 # board for function chessboard, marks for marks_grid, one for the side represents by 1, negaOne for the side of -1
 import copy
+import time
+from progress.spinner import Spinner
 
 
 def init_chessboard(board):
@@ -297,4 +299,12 @@ if __name__ == '__main__':
     turn = -1
 
     # TODO: make the actual move
+    spinner = Spinner('Thinking ')
+    spinner.check_tty = False
+    for i in range(20):
+        time.sleep(0.1)
+        spinner.next()
+    spinner.finish()
+    time.sleep(0.3)
+    print()
     ez_AI_move(chessboard)
