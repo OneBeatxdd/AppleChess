@@ -4,6 +4,17 @@ import time
 from progress.spinner import Spinner
 
 
+class AI:
+    close_set = []
+    AI_board = []
+    AI_scoreboard = []
+
+    def __init__(self, board, score):
+        self.close_set = ez_AI_move(board)
+        self.AI_board = board
+        self.AI_scoreboard = score
+
+
 def init_chessboard(board):
     board[3][3] = 1
     board[3][4] = -1
@@ -214,7 +225,7 @@ def user_move(board):
         print("You dun have any available moves hence passing you here")
         input("Press Enter to continue...")
         pass
-    # DEBUG
+    # DEBUG printing out choices
     for choice in choices:
         print("(actualMovement, originalPosition, position)", choice[0], choice[1], choice[2])
 
@@ -257,13 +268,14 @@ def ez_AI_move(board):
                     actual_move(tempBoard, move)
                 myScore, AIScore = update_score(tempBoard, marks_grid)
                 FinalChoices.append([actualMoves, myScore, AIScore])
-    # DEBUG
+    # DEBUG printing out the choices for AI
     for possible in FinalChoices:
         print("(actualMovement, originalPosition, position)", possible[0], "Scores: "
               , possible[1], possible[2])
+    return FinalChoices
 
 
-# main
+# MAIN
 if __name__ == '__main__':
     myScore, oppoScore = 0, 0
     myPiece, oppoPiece = 0, 0
@@ -281,7 +293,7 @@ if __name__ == '__main__':
                   [5, 3, 4, 4, 4, 4, 3, 5]]     # the marks for AI to take
     init_chessboard(chessboard)
 
-    # DEBUG
+    # DEBUG basic
     print_board(chessboard)
     print_board(marks_grid)
     myScore, oppoScore = update_score(chessboard, marks_grid)
@@ -307,4 +319,4 @@ if __name__ == '__main__':
     spinner.finish()
     time.sleep(0.3)
     print()
-    ez_AI_move(chessboard)
+    AI = AI(chessboard, marks_grid)
