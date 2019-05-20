@@ -1,7 +1,36 @@
 # board for function chessboard, marks for marks_grid, one for the side represents by 1, negaOne for the side of -1
 import copy
+import random
 import time
 from progress.spinner import Spinner
+
+
+class Node:
+    g_cost = 0
+    h_cost = 0
+    f_cost = 0
+    move = []
+
+    def __init__(self, move, g, h):
+        self.move = move
+        self.g_cost = g
+        self.h_cost = h
+        self.f_cost = g + h
+
+    def __lt__(self, other):
+        if self.f_cost == other.f_cost:
+            if self.h_cost == other.h_cost:
+                if self.g_cost == other.g_cost:
+                    if random.randint(0, 1):
+                        return True
+                    else:
+                        return False
+                else:
+                    return self.g_cost < other.g_cost
+            else:
+                return self.h_cost < other.h_cost
+        else:
+            return self.f_cost < other.f_cost
 
 
 class AI:
@@ -16,8 +45,6 @@ class AI:
 
     # this AI only care the current move now dun care anything in the future
     def ez_AI_move(self):
-        myScore, AIScore = update_score(chessboard, marks_grid)
-        myPiece, AIPiece = count_pieces(chessboard)
         AIChoices = available_moves(-1, self.AI_board)
         FinalChoices = []
         # loop the choices to see are there duplicate destination
@@ -30,11 +57,13 @@ class AI:
                     for move in actualMoves:
                         actual_move(tempBoard, move)
                     myScore, AIScore = update_score(tempBoard, marks_grid)
-                    FinalChoices.append([actualMoves, myScore, AIScore])
+                    myPiece, AIPiece = count_pieces(tempBoard)
+                    tempNode = Node(actualMoves, AIScore - myScore, AIPiece - myPiece)
+                    FinalChoices.append(tempNode)
         # DEBUG printing out the choices for AI
         for possible in FinalChoices:
-            print("(actualMovement, originalPosition, position)", possible[0], "Scores: "
-                  , possible[1], possible[2])
+            print("(actualMovement, originalPosition, position)", possible.move, "Scores: "
+                  , possible.g_cost, possible.h_cost)
         self.open_set = FinalChoices
 
 
@@ -319,3 +348,19 @@ if __name__ == '__main__':
     print()
     AI = AI(chessboard, marks_grid)
     AI.ez_AI_move()
+
+    # DEBUG test the sort function
+    test_sort_list = []
+    test_sort_list.append(Node([((2, 3), (4, 3), 2)], 5, 5))
+    test_sort_list.append(Node([((2, 3), (4, 3), 2)], 7, 5))
+    test_sort_list.append(Node([((2, 3), (4, 3), 2)], 3, 3))
+    test_sort_list.append(Node([((2, 3), (4, 3), 2)], 7, 3))
+
+    print()
+    for i in range(len(test_sort_list)):
+        print(test_sort_list[i].move, test_sort_list[i].g_cost, test_sort_list[i].h_cost, test_sort_list[i].f_cost)
+
+    print()
+    test_sort_list.sort()
+    for i in range(len(test_sort_list)):
+        print(test_sort_list[i].move, test_sort_list[i].g_cost, test_sort_list[i].h_cost, test_sort_list[i].f_cost)
