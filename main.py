@@ -6,31 +6,32 @@ from progress.spinner import Spinner
 
 
 class Node:
-    g_cost = 0
-    h_cost = 0
-    f_cost = 0
+    # higher the better because meaning have more piece and or more points
+    g_value = 0
+    h_value = 0
+    f_value = 0
     move = []
 
     def __init__(self, move, g, h):
         self.move = move
-        self.g_cost = g
-        self.h_cost = h
-        self.f_cost = g + h
+        self.g_value = g
+        self.h_value = h
+        self.f_value = g + h
 
     def __lt__(self, other):
-        if self.f_cost == other.f_cost:
-            if self.h_cost == other.h_cost:
-                if self.g_cost == other.g_cost:
+        if self.f_value == other.f_value:
+            if self.h_value == other.h_value:
+                if self.g_value == other.g_value:
                     if random.randint(0, 1):
                         return True
                     else:
                         return False
                 else:
-                    return self.g_cost < other.g_cost
+                    return self.g_value < other.g_value
             else:
-                return self.h_cost < other.h_cost
+                return self.h_value < other.h_value
         else:
-            return self.f_cost < other.f_cost
+            return self.f_value < other.f_value
 
 
 class AI:
@@ -63,8 +64,10 @@ class AI:
         # DEBUG printing out the choices for AI
         for possible in FinalChoices:
             print("(actualMovement, originalPosition, position)", possible.move, "Scores: "
-                  , possible.g_cost, possible.h_cost)
+                  , possible.g_value, possible.h_value)
         self.open_set = FinalChoices
+        # decide how to move
+        self.open_set.sort(reverse=True)
 
 
 def init_chessboard(board):
@@ -270,6 +273,8 @@ def actual_move(board, choice):
 # TODO: link the UI to the input i think
 
 
+# this function is to generate the moves that are available for the user to move and
+# actual_move is actually changing the board
 def user_move(board):
     # TODO: generate the move list for user to put in
     choices = available_moves(1, board)
@@ -285,7 +290,7 @@ def user_move(board):
     while not valid:
         # TODO: get user input for the move NOW terminal but later get it from UI
         userMove[0], userMove[1] = input("Enter coordinate: ").split()
-        userCoordinates = (int (userMove[0]), int (userMove[1]))
+        userCoordinates = (int(userMove[0]), int(userMove[1]))
         print(userCoordinates)
         userChosenMove = []
         # check if valid
@@ -350,17 +355,18 @@ if __name__ == '__main__':
     AI.ez_AI_move()
 
     # DEBUG test the sort function
-    test_sort_list = []
-    test_sort_list.append(Node([((2, 3), (4, 3), 2)], 5, 5))
+    test_sort_list = list()
+    test_sort_list.append(Node([((2, 3), (4, 3), 2), ((2, 3), (4, 3), 2)], 5, 5))
     test_sort_list.append(Node([((2, 3), (4, 3), 2)], 7, 5))
     test_sort_list.append(Node([((2, 3), (4, 3), 2)], 3, 3))
     test_sort_list.append(Node([((2, 3), (4, 3), 2)], 7, 3))
+    test_sort_list.append(Node([((2, 3), (4, 3), 6)], 5, 5))
 
     print()
     for i in range(len(test_sort_list)):
-        print(test_sort_list[i].move, test_sort_list[i].g_cost, test_sort_list[i].h_cost, test_sort_list[i].f_cost)
+        print(test_sort_list[i].move, test_sort_list[i].g_value, test_sort_list[i].h_value, test_sort_list[i].f_value)
 
     print()
-    test_sort_list.sort()
+    test_sort_list.sort(reverse=True)
     for i in range(len(test_sort_list)):
-        print(test_sort_list[i].move, test_sort_list[i].g_cost, test_sort_list[i].h_cost, test_sort_list[i].f_cost)
+        print(test_sort_list[i].move, test_sort_list[i].g_value, test_sort_list[i].h_value, test_sort_list[i].f_value)
