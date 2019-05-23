@@ -7,31 +7,31 @@ from progress.spinner import Spinner
 
 class Node:
     # higher the better because meaning have more piece and or more points
-    g_value = 0
-    h_value = 0
-    f_value = 0
-    move = []
+    p_value = 0         # p -> piece
+    s_value = 0         # s -> score
+    a_value = 0         # a -> all => p + s
+    moves = []
 
-    def __init__(self, move, g, h):
-        self.move = move
-        self.g_value = g
-        self.h_value = h
-        self.f_value = g + h
+    def __init__(self, move, p, s):
+        self.moves = move
+        self.p_value = p
+        self.s_value = s
+        self.a_value = p + s
 
     def __lt__(self, other):
-        if self.f_value == other.f_value:
-            if self.h_value == other.h_value:
-                if self.g_value == other.g_value:
+        if self.a_value == other.a_value:
+            if self.s_value == other.s_value:
+                if self.p_value == other.p_value:
                     if random.randint(0, 1):
                         return True
                     else:
                         return False
                 else:
-                    return self.g_value < other.g_value
+                    return self.p_value < other.p_value
             else:
-                return self.h_value < other.h_value
+                return self.s_value < other.s_value
         else:
-            return self.f_value < other.f_value
+            return self.a_value < other.a_value
 
 
 class AI:
@@ -45,7 +45,8 @@ class AI:
         self.AI_scoreboard = score
 
     # this AI only care the current move now dun care anything in the future
-    def ez_AI_move(self):
+    def ez_AI_move(self, board):
+        self.AI_board = board
         AIChoices = available_moves(-1, self.AI_board)
         FinalChoices = []
         # loop the choices to see are there duplicate destination
@@ -63,11 +64,15 @@ class AI:
                     FinalChoices.append(tempNode)
         # DEBUG printing out the choices for AI
         for possible in FinalChoices:
-            print("(actualMovement, originalPosition, position)", possible.move, "Scores: "
-                  , possible.g_value, possible.h_value)
+            print("(actualMovement, originalPosition, position)", possible.moves, "Scores: "
+                  , possible.p_value, possible.s_value)
         self.open_set = FinalChoices
         # decide how to move
         self.open_set.sort(reverse=True)
+        chosenmove = self.open_set[0]
+        print(chosenmove.moves)
+        for move in chosenmove.moves:
+            actual_move(board, move)
 
 
 def init_chessboard(board):
@@ -97,7 +102,7 @@ def update_score(board, marks):
     return one, negaOne
 
 
-# TODO: count the board pieces
+# count the board pieces
 def count_pieces(board):
     one, negaOne = 0, 0
     for i in range(0, 8):
@@ -115,7 +120,7 @@ def print_score(one, negaOne, onePiece, negaPiece):
     print()
 
 
-# TODO: check if the available move for the side
+# check if the available move for the side
 def available_moves(side, board):
     availableMovesList = []                     # (actualMovement, originalPosition, position)
     checkedPositionList = []
@@ -240,7 +245,7 @@ def check_around(side, originalPosition, checkPosition, board, iteration):
                 return check_around(side, (row+1, col+1), 8, board, iteration)
 
 
-# TODO: confirm the move and change the chessboard
+# confirm the move and change the chessboard
 def actual_move(board, choice):
     side = board[choice[1][0]][choice[1][1]]
     direction = choice[2]
@@ -276,7 +281,6 @@ def actual_move(board, choice):
 # this function is to generate the moves that are available for the user to move and
 # actual_move is actually changing the board
 def user_move(board):
-    # TODO: generate the move list for user to put in
     choices = available_moves(1, board)
     if not choices:         # if empty
         print("You dun have any available moves hence passing you here")
@@ -303,7 +307,6 @@ def user_move(board):
 
     # check if the moves are more 1 directions
     for move in userChosenMove:
-        # TODO: make the actual move
         actual_move(board, move)
 
 
@@ -334,6 +337,8 @@ if __name__ == '__main__':
     # DEBUG
 
     # TODO: loop like while there is still choice to move for both ppl
+    # two condition to end game: 1. full board 2. both cant move
+    # use the same check available moves
     turn = 1  # turn 1 or -1 who is going to move 0 = end both
     # user moving the piece
     user_move(chessboard)
@@ -341,8 +346,6 @@ if __name__ == '__main__':
 
     # AI turn or -1 turn
     turn = -1
-
-    # TODO: make the actual move
     spinner = Spinner('Thinking ')
     spinner.check_tty = False
     for i in range(20):
@@ -352,21 +355,6 @@ if __name__ == '__main__':
     time.sleep(0.3)
     print()
     AI = AI(chessboard, marks_grid)
-    AI.ez_AI_move()
+    AI.ez_AI_move(chessboard)
+    print_board(chessboard)
 
-    # DEBUG test the sort function
-    test_sort_list = list()
-    test_sort_list.append(Node([((2, 3), (4, 3), 2), ((2, 3), (4, 3), 2)], 5, 5))
-    test_sort_list.append(Node([((2, 3), (4, 3), 2)], 7, 5))
-    test_sort_list.append(Node([((2, 3), (4, 3), 2)], 3, 3))
-    test_sort_list.append(Node([((2, 3), (4, 3), 2)], 7, 3))
-    test_sort_list.append(Node([((2, 3), (4, 3), 6)], 5, 5))
-
-    print()
-    for i in range(len(test_sort_list)):
-        print(test_sort_list[i].move, test_sort_list[i].g_value, test_sort_list[i].h_value, test_sort_list[i].f_value)
-
-    print()
-    test_sort_list.sort(reverse=True)
-    for i in range(len(test_sort_list)):
-        print(test_sort_list[i].move, test_sort_list[i].g_value, test_sort_list[i].h_value, test_sort_list[i].f_value)
